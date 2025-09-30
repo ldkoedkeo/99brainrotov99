@@ -35,32 +35,34 @@ local TG_MAIN = {
     ChatId = "1386387550",
     Enabled = true,
     ImportantObjects = {
-        ["Secret Lucky Block"] = true,
-        ["Pot H77otspot"] = true,
+        ["Pot Hotspdddot"] = true,
         ["La Grande Combinasion"] = true,
         ["Garama and Madundung"] = true,
         ["Nuclearo Dinossauro"] = true,
-        ["Chicleteira Bicicleteira"] = true,
         ["Dragon Cannelloni"] = true,
         ["Los Combinasionas"] = true,
         ["Los Hotspotsitos"] = true,
         ["Esok Sekolah"] = true,
         ["La Supreme Combinasion"] = true,
-        ["Nooo My Hotspot"] = true,
+        ["Nooo My Hodsadadatspot"] = true,
         ["Ketupat Kepat"] = true,
-        ["Nooo My Hotspot"] = true,
+        ["Nofddsfoo My Hotspot"] = true,
         ["Spaghetti Tualetti"] = true,
         ["Strawberry Elephant"] = true,
         ["Ketchuru and Musturu"] = true,
-        ["LAs IIooo My HotOOpotsitos"] = true,
         ["La Kark7658erkar Combinasion"] = true,
         ["Tralaledon"] = true,
         ["Los Bros"] = true,
-        ["gg"] = true,
-        ["Las sis"] = true,
-        ["Celularcini Viciosini"] = true,
         ["La Extinct Grande"] = true,
-        ["Los Chicleteiras"] = true
+        ["Los Chicleteiras"] = true,
+        ["Las Sis"] = true,
+        ["Tacorita Bicicleta"] = true,
+        ["Tictac Sahur"] = true,
+        ["Celularcini Visiosini"] = true,
+        ["Chicleteira Bicicleteira"] = true,
+        ["Los Primos"] = true,
+        ["Tang Tang Keletang"] = true,
+        ["Money Money Puggy"] = true
     }
 }
 
@@ -93,7 +95,7 @@ local OBJECT_INCOME = {
     ["Las Tralaleritas"] = "625K/s",
     ["Graipuss Medussi"] = "1M/s",
     ["Torrtuginni Dragonfrutini"] = "350K/s",
-    ["Pot Hotsp666ot"] = "2.5M/s",
+    ["Pot Hotspot"] = "2.5M/s",
     ["La Grande Combinasion"] = "10M/s",
     ["Garama and Madundung"] = "50M/s",
     ["Secret Lucky Block"] = "???/s",
@@ -108,18 +110,24 @@ local OBJECT_INCOME = {
     ["Karkerkar Kurkur"] = "275K/s",
     ["Job Job Job Sahur"] = "700K/s",
     ["La Supreme Combinasion"] = "40M/s",
-    ["Nooo My Hotspot"] = "10M/s",
-    ["Spaghetti Tualetti"] = "7.5M/s",
+    ["Nooo My Hotspot"] = "1.5M/s",
+    ["Spaghetti Tualetti"] = "60M/s",
     ["Strawberry Elephant"] = "250M/s",
-    ["Ketchuru and Musturu"] = "50M/s",
-    ["Los Nooo My Hotspotsitos"] = "5M/s",
+    ["Ketupat Kepat"] = "35M/s",
+    ["Ketchuru and Musturu"] = "42.5M/s",
+    ["Los Nooo My Hotssffsdsdpotsitos"] = "5M/s",
     ["La Kark767erkar Combinasion"] = "50M/s",
-    ["Tralaledon"] = "50M/s",
-    ["Los Bros"] = "50M/s",
-    ["Las Sis"] = "50M/s",
-    ["Celularcini Viciosini"] = "50M/s",
-    ["La Extinct Grande"] = "50M/s",
-    ["Los Chicleteiras"] = "50M/s"
+    ["Tralaledon"] = "27.5M/s",
+    ["Los Bros"] = "24M/s",
+    ["La Extinct Grande"] = "23.5M/s",
+    ["Los Chicleteiras"] = "7M/s",
+    ["Las Sis"] = "18M/s",
+    ["Tacorita Bicicleta"] = "16.5M/s",
+    ["Tictac Sahur"] = "37M/s",
+    ["Celularcini Visiosini"] = "22.5M/s",
+    ["Los Primos"] = "31M/s",
+    ["Tang Tang Keletang"] = "33.5M/s",
+    ["Money Money Puggy"] = "21M/s"
 }
 
 -- Множители мутаций и трейтов
@@ -130,7 +138,8 @@ local MUTATION_MULTIPLIERS = {
     ["Bloodrot"] = 2,
     ["Candy"] = 4,
     ["Lava"] = 6,
-    ["Galaxy"] = 6
+    ["Galaxy"] = 7,
+    ["Yin Yang"] = 7
 }
 
 local TRAIT_MULTIPLIERS = {
@@ -148,7 +157,17 @@ local TRAIT_MULTIPLIERS = {
     ["Bubblegum"] = 4,
     ["Cometstruck"] = 3.5,
     ["Galactic"] = 4,
-    ["Explosive"] = 4
+    ["Explosive"] = 4,
+    ["Paint"] = 6,
+    ["Brazil"] = 6,
+    ["Matteo Hat"] = 3.5,
+    ["Rain"] = 1.5,
+    ["UFO"] = 3,
+    ["Skeleton"] = 4,
+    ["Spider"] = 4.5,
+    ["Sombrero"] = 5
+    
+    
 }
 
 -- Эмодзи для объектов
@@ -159,10 +178,10 @@ local OBJECT_EMOJIS = {
     ["Las Tralaleritas"] = "🌸",
     ["Graipuss Medussi"] = "🦑",
     ["Torrtuginni Dragonfrutini"] = "🐉",
-    ["Pot Ho666tspot"] = "📱",
+    ["Pot Hotspot"] = "📱",
     ["La Grande Combinasion"] = "❗️",
-    ["Garama and Madundung"] = "🥫",
-    ["hff"] = "⬛️",
+    ["Garama and Madundung"] = "🍝",
+    ["Secret Lucky Block"] = "⬛️",
     ["Dragon Cannelloni"] = "🐲",
     ["Nuclearo Dinossauro"] = "🦕",
     ["Las Vaquitas Saturnitas"] = "👦",
@@ -172,21 +191,25 @@ local OBJECT_EMOJIS = {
     ["Los Hotspotsitos"] = "☎️",
     ["Esok Sekolah"] = "🏠",
     ["Nooo My Hotspot"] = "👽",
-    ["Job Job Job Sahur"] = "⬜️",
     ["La Supreme Combinasion"] = "🔫",
     ["Admin Lucky Block"] = "🆘",
-    ["Ketupat Kepat"] = "⚰️",
+    ["Ketupat Kepat"] = "🍏",
     ["Strawberry Elephant"] = "🐘",
     ["Spaghetti Tualetti"] = "🚽",
     ["Ketchuru and Musturu"] = "🍾",
-    ["Los Nooo My Hotspotsitos"] = "🥔",
+    ["Los Nooo My Hotspdffsfsfotsitos"] = "🥔",
     ["La Kark666erkar Combinasion"] = "🥊",
     ["Tralaledon"] = "🦈",
     ["Los Bros"] = "✊",
-    ["Las Sis"] = "👩",
-    ["Celularcini Viciosini"] = "🦾",
-    ["La Extinct Grande"] = "🦴",
-    ["Los Chicleteiras"] = "💰"
+    ["La Extinct Grande"] = "🩻", 
+    ["Los Chicleteiras"] = "🚳",
+    ["Las Sis"] = "👧",
+    ["Tacorita Bicicleta"] = "🌮",
+    ["Tictac Sahur"] = "🕰️",
+    ["Celularcini Visiosini"] = "📞",
+    ["Los Primos"] = "🙆‍♂️",
+    ["Tang Tang Keletang"] = "📢",
+    ["Money Money Puggy"] = "🐶"
 }
 
 -- Эмодзи для мутаций
@@ -197,7 +220,8 @@ local MUTATION_EMOJIS = {
     ["Diamond"] = "💎",
     ["Candy"] = "🍬",
     ["Bloodrot"] = "🟥",
-    ["Galaxy"] = "🟪"
+    ["Galaxy"] = "🟪",
+    ["Yin Yang"] = "☯️"
 }
 
 -- Список объектов
@@ -208,10 +232,10 @@ local OBJECT_NAMES = {
     "Las Tralaleritas",
     "Graipuss Medussi",
     "Torrtuginni Dragonfrutini",
-    "Pot Ho566tspot",
+    "Pot Hotspot",
     "La Grande Combinasion",
     "Garama and Madundung",
-    "Sec555ret Lucky Block",
+    "Secret Lucksfsfsfy Block",
     "Dragon Cannelloni",
     "Nuclearo Dinossauro",
     "Las Vaquitas Saturnitas",
@@ -221,21 +245,25 @@ local OBJECT_NAMES = {
     "Los Hotspotsitos",
     "Esok Sekolah",
     "Nooo My Hotspot",
-    "Job Job Job Sahur",
     "La Supreme Combinasion",
     "Admin Lucky Block",
     "Ketupat Kepat",
     "Strawberry Elephant",
     "Spaghetti Tualetti",
     "Ketchuru and Musturu",
-    "Los Nooo My Hotspotsitos",
+    "Los Nooo Mysffsfsf Hotspotsitos",
     "La Kark56656erkar Combinasion",
     "Los Bros",
     "Tralaledon",
-    "Las Sis",
-    "Celularcini Viciosini",
     "La Extinct Grande",
-    "Los Chicleteiras"
+    "Los Chicleteiras",
+    "Las Sis",
+    "Tacorita Bicicleta",
+    "Tictac Sahur",
+    "Celularcini Visiosini",
+    "Los Primos",
+    "Tang Tang Keletang",
+    "Money Money Puggy"
 }
 
 -- Системные переменные
@@ -352,13 +380,19 @@ local function findTraits(obj)
     return traits
 end
 
+
 local function scanObject(obj)
     if not obj or not obj.Parent then return nil end
     
-    -- Проверка прозрачности только для частей Cube.
-    if not checkCubeTransparency(obj) then
-        print(obj.Name .. ": найдены части Cube. с высокой прозрачностью (>0.40), уведомление не отправляется")
-        return nil
+    -- Пропуск проверки прозрачности для "Garama and Madundung" и "La Supreme Combinasion"
+    if obj.Name == "Garama and Madundung" or obj.Name == "La Supreme Combinasion" then
+        print(obj.Name .. ": проверка прозрачности пропущена")
+    else
+        -- Проверка прозрачности только для частей Cube.
+        if not checkCubeTransparency(obj) then
+            print(obj.Name .. ": найдены части Cube с высокой прозрачностью (>0.40), уведомление не отправляется")
+            return nil
+        end
     end
     
     local mutation = findMutation(obj)
@@ -673,7 +707,7 @@ local function updateESP(deltaTime)
                     playDetectionSound()
                     
                     -- Добавляем в соответствующий список для уведомлений
-                    if TG_MAIN.ImportantObjects[obj.Name] or objData.numericIncome >= 10000000 then
+                    if TG_MAIN.ImportantObjects[obj.Name] or objData.numericIncome >= 25000000 then
                         table.insert(objectsToNotifyMain, objData)
                     else
                         table.insert(objectsToNotifySpecial, objData)
