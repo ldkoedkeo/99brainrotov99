@@ -46,7 +46,7 @@ local OBJECTS = {
     ['Tacorita Bicicleta'] = { emoji = '🚵‍♂️', important = true },
     ['Capitano Moby'] = { emoji = '🚢', important = true },
     ['La Taco Combinasion'] = { emoji = '👒', important = true },
-    ['Cooki and Milki'] = { emoji = '🍪', important = true },
+    ['Los Burritos'] = { emoji = '🍪', important = true },
     ['Los Puggies'] = { emoji = '🦮', important = true },
 }
 
